@@ -114,11 +114,17 @@ def render_cooccurrence(df):
             matrix.loc[t1, t2] += 1
             matrix.loc[t2, t1] += 1
 
-    st.plotly_chart(
-        px.imshow(
-            matrix, color_continuous_scale='Viridis', aspect='auto',
-        ), width='stretch',
+    fig = px.imshow(
+        matrix,
+        color_continuous_scale=[
+            [0, '#f5f7fb'],  # light background for zero values
+            [1, '#1f4b99'],
+        ],
+        aspect='equal',
+        zmin=0,
     )
+    fig.update_traces(xgap=1, ygap=1)
+    st.plotly_chart(fig, width='stretch')
 
 
 def render_knowledge_map(df_exploded):
@@ -167,14 +173,20 @@ def render_problem_matrix(df):
         matrix_data,
         x=current_tags,
         y=ids,
-        color_continuous_scale=[[0, 'white'], [1, '#636EFA']],  # White to Blue
-        aspect='auto',
+        color_continuous_scale=[
+            [0, '#f5f7fb'],  # Light base for missing data
+            [1, '#636EFA'],
+        ],
+        aspect='equal',
         labels=dict(x='Tag', y='Benchmark', color='Present'),
+        zmin=0,
+        zmax=1,
     )
     fig.update_layout(
         height=max(400, len(ids) * 20),  # Dynamic height
         xaxis={'side': 'top', 'tickangle': -45},
     )
+    fig.update_traces(xgap=1, ygap=1)
     fig.update_traces(showscale=False)
     st.plotly_chart(fig, width='stretch')
 
