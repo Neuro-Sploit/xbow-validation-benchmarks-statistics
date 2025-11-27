@@ -4,8 +4,7 @@ from pathlib import Path
 import structlog
 import tqdm
 import typer
-
-from xbow_validation_benchmarks_statistics.models.benchmark import Benchmark
+from tencent_cloud_hackathon_intelligent_pentest_competition_api_server.models.benchmark import Benchmark
 
 
 app = typer.Typer()
