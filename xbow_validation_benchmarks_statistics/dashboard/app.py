@@ -123,6 +123,10 @@ def render_cooccurrence(df):
         aspect='equal',
         zmin=0,
     )
+    # Keep cell size readable regardless of tag count
+    cell_px = 48
+    matrix_dim = max(320, len(top_tags) * cell_px)
+    fig.update_layout(height=matrix_dim, width=matrix_dim)
     fig.update_traces(xgap=1, ygap=1)
     st.plotly_chart(fig, width='stretch')
 
@@ -183,7 +187,8 @@ def render_problem_matrix(df):
         zmax=1,
     )
     fig.update_layout(
-        height=max(400, len(ids) * 20),  # Dynamic height
+        height=max(480, len(ids) * 32),  # Larger cells for readability
+        width=max(960, len(current_tags) * 32),
         xaxis={'side': 'top', 'tickangle': -45},
     )
     fig.update_traces(xgap=1, ygap=1)
