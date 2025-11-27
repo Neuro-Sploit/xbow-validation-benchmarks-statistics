@@ -2,6 +2,8 @@
 
 An interactive analytics dashboard designed to visualize the difficulty distribution, vulnerability coverage, and structural diversity of the Xbow benchmark suite.
 
+> Live Demo: https://xbow-validation-benchmarks-statistics.streamlit.app/
+
 ![dashboard](./figures/dashboard.png)
 ![owasp](./figures/owasp.png)
 ![vis](./figures/vis.png)
