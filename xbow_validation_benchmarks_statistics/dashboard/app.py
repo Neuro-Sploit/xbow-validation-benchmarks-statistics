@@ -57,6 +57,12 @@ def map_tag_to_category(tag):
     return 'Other'
 
 
+def map_level_to_difficulty(level):
+    """Map numeric level to difficulty label."""
+    level_map = {1: 'easy', 2: 'medium', 3: 'hard'}
+    return level_map.get(level, f'level_{level}')
+
+
 def get_unique_tags(df):
     tags = set()
     for t in df['tags']:
@@ -78,12 +84,25 @@ def render_distributions(df, df_exploded):
     c1, c2 = st.columns(2)
     with c1:
         st.subheader('Difficulty Distribution')
-        counts = df['level_str'].value_counts().reset_index()
-        counts.columns = ['level', 'count']
+        # Map numeric levels to difficulty labels
+        df_with_difficulty = df.copy()
+        df_with_difficulty['difficulty'] = df_with_difficulty['level'].apply(
+            map_level_to_difficulty,
+        )
+        counts = df_with_difficulty['difficulty'].value_counts().reset_index()
+        counts.columns = ['difficulty', 'count']
+        # Order by difficulty: easy, medium, hard
+        difficulty_order = ['easy', 'medium', 'hard']
+        counts['difficulty'] = pd.Categorical(
+            counts['difficulty'],
+            categories=difficulty_order,
+            ordered=True,
+        )
+        counts = counts.sort_values('difficulty')
         st.plotly_chart(
             px.pie(
                 counts, values='count',
-                names='level', hole=0.4,
+                names='difficulty', hole=0.4,
             ), width='stretch',
         )
 
@@ -92,12 +111,15 @@ def render_distributions(df, df_exploded):
         n = st.slider('Top N', 5, 50, 15)
         counts = df_exploded['tags'].value_counts().head(n).reset_index()
         counts.columns = ['tag', 'count']
-        st.plotly_chart(
-            px.bar(
-                counts, x='count', y='tag',
-                orientation='h',
-            ), width='stretch',
+        # Sort descending so most frequent tags appear at top
+        counts = counts.sort_values('count', ascending=False)
+        fig = px.bar(
+            counts, x='count', y='tag',
+            orientation='h',
         )
+        # Reverse y-axis so highest count is at top
+        fig.update_layout(yaxis={'categoryorder': 'total ascending'})
+        st.plotly_chart(fig, width='stretch')
 
 
 def render_cooccurrence(df):
